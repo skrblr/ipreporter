@@ -15,18 +15,18 @@ NOW=$(date +"%Y/%m/%d %T")
 IP=`wget -q -O - checkip.net-me.net/plain`
 
 if [[ $LOGGING -ge 2 ]]; then
-  echo "$NOW : running"
+  echo "$NOW : running" >> LOGFILE
 fi
 
 if [[ ! -e $FILE ]]; then
   echo $IP > $FILE
   if [[ $LOGGING -ge 1 ]]; then
-    echo "$NOW : made new file $FILE"
+    echo "$NOW : made new file $FILE" >> LOGFILE
   fi
-elif [ '$(head -n 1 $FILE)' != $IP ]; then
+elif [ "$(cat $FILE)" != "$IP" ]; then
   echo $IP > $FILE
-  mailx -s "$HOSTNAME has a new IP!" $EMAIL <<< $FILE
+  mailx -s "$HOSTNAME has a new IP!" $EMAIL <<< `cat $FILE`
   if [[ LOGGING -ge 1 ]]; then
-    echo "$NOW : ip changed to $IP, sent email"
+    echo "$NOW : ip changed to $IP, sent email" >> LOGFILE
   fi
 fi
